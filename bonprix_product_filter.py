@@ -1,7 +1,4 @@
-# Product Filter System for E-commerce
-# Mock data implementation - no database needed
 
-# Sample product data - in a real app this would come from a database
 products = [
     {"id": 1, "name": "Schwarzes T-Shirt", "category": "Oberteile", "size": "M", "color": "Schwarz", "price": 19.99, "popularity": 85},
     {"id": 2, "name": "Blaue Jeans", "category": "Hosen", "size": "L", "color": "Blau", "price": 49.99, "popularity": 92},
@@ -86,7 +83,7 @@ def sort_products(product_list, sort_by="name"):
     elif sort_by == "popularity":
         return sorted(product_list, key=lambda x: x["popularity"], reverse=True)
     else:
-        # Default: sort by name
+        # Default: nach name
         return sorted(product_list, key=lambda x: x["name"])
 
 
@@ -113,30 +110,30 @@ def main():
     print("   🛍️  BON PRIX - Produktfilter System")
     print("=" * 80)
     
-    # Start with all products
+    # Ale Produkte
     filtered_products = products.copy()
     
-    # Get search term
+    #  Search input
     search = input("\n🔍 Suchbegriff (Enter für alle): ").strip()
     if search:
         filtered_products = search_products(search)
         print(f"✓ Suche nach: '{search}'")
     
-    # Filter by size
+    # Größenfilter
     print("\nVerfügbare Größen: S, M, L, XL")
     size = input("📏 Größe filtern (Enter für alle): ").strip().upper()
     if size:
         filtered_products = filter_by_size(filtered_products, size)
         print(f"✓ Größe: {size}")
     
-    # Filter by color
+    # Farbenfilter
     print("\nVerfügbare Farben: Schwarz, Blau, Rot, Weiß, Grün, Gelb, Grau, Rosa")
     color = input("🎨 Farbe filtern (Enter für alle): ").strip()
     if color:
         filtered_products = filter_by_color(filtered_products, color)
         print(f"✓ Farbe: {color}")
     
-    # Filter by price
+    #  Preisfilter
     print("\nPreisbereich filtern:")
     min_price_input = input("  💰 Mindestpreis (Enter für keinen): ").strip()
     max_price_input = input("  💰 Maximalpreis (Enter für keinen): ").strip()
@@ -163,10 +160,10 @@ def main():
     sort_by = sort_options.get(sort_choice, "name")
     filtered_products = sort_products(filtered_products, sort_by)
     
-    # Display results
+    #  Ergebnisse Anzeigen
     display_products(filtered_products)
     
-    # Option to restart
+    # Resetknopf
     print("\n")
     restart = input("Neue Suche? (j/n): ").strip().lower()
     if restart == "j":
