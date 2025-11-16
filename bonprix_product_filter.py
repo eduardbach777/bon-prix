@@ -110,7 +110,7 @@ def main():
     print("   🛍️  BON PRIX - Produktfilter System")
     print("=" * 80)
     
-    # Ale Produkte
+    # Alle Produkte
     filtered_products = products.copy()
     
     #  Search input
