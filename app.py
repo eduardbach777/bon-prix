@@ -1,11 +1,10 @@
-# Flask Web App - Product Filter for Bon Prix
-# Run with: python app.py
+# Product Filter Bon Prix mit Flask runnen
 
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-# Product data - would normally be in a database
+# Mock Datenbank
 PRODUCTS = [
     {"id": 1, "name": "Schwarzes T-Shirt", "category": "Oberteile", "size": "M", "color": "Schwarz", "price": 19.99, "popularity": 85, "image": "tshirt.jpg"},
     {"id": 2, "name": "Blaue Jeans", "category": "Hosen", "size": "L", "color": "Blau", "price": 49.99, "popularity": 92, "image": "jeans.jpg"},
@@ -28,30 +27,30 @@ PRODUCTS = [
 def filter_products(search="", size="", color="", min_price=None, max_price=None, sort_by="name"):
     """Apply all filters and sorting to products"""
     
-    # Start with all products
+    # Produkte listen
     results = PRODUCTS.copy()
     
-    # Apply search filter
+    # Suchfilter Anwenden
     if search:
         search = search.lower()
         results = [p for p in results if search in p["name"].lower() or search in p["category"].lower()]
     
-    # Apply size filter
+    # Größenfilter anwenden
     if size:
         results = [p for p in results if p["size"] == size]
     
-    # Apply color filter
+    # Farbenfilter anwenden
     if color:
         results = [p for p in results if p["color"].lower() == color.lower()]
     
-    # Apply price range filter
+    #  Preisrange Filter
     if min_price is not None:
         results = [p for p in results if p["price"] >= min_price]
     
     if max_price is not None:
         results = [p for p in results if p["price"] <= max_price]
     
-    # Apply sorting
+    # Anwenden Sortierung
     if sort_by == "price_low":
         results.sort(key=lambda x: x["price"])
     elif sort_by == "price_high":
@@ -68,23 +67,23 @@ def filter_products(search="", size="", color="", min_price=None, max_price=None
 def index():
     """Main page with product filtering"""
     
-    # Get filter parameters from URL
+    # filter parameter
     search = request.args.get("search", "")
     size = request.args.get("size", "")
     color = request.args.get("color", "")
     sort_by = request.args.get("sort", "name")
     
-    # Get price range
+    #   Preisfilter
     min_price_str = request.args.get("min_price", "")
     max_price_str = request.args.get("max_price", "")
     
     min_price = float(min_price_str) if min_price_str else None
     max_price = float(max_price_str) if max_price_str else None
     
-    # Filter products
+    #  Produkte Filtern
     products = filter_products(search, size, color, min_price, max_price, sort_by)
     
-    # Get unique sizes and colors for filter dropdowns
+    # Größen und Farbfilter Unique
     all_sizes = sorted(set(p["size"] for p in PRODUCTS))
     all_colors = sorted(set(p["color"] for p in PRODUCTS))
     
