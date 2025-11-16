@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bon Prix - Produktsuche</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .filters {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        
+        .filter-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .price-range {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .price-range input {
+            width: 100%;
+        }
+        
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        .reset-btn {
+            background-color: #6c757d;
+            margin-left: 10px;
+        }
+        
+        .reset-btn:hover {
+            background-color: #545b62;
+        }
+        
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #007bff;
+        }
+        
+        .product-count {
+            font-size: 18px;
+            color: #555;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .product-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: white;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            font-size: 48px;
+        }
+        
+        .product-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .product-details {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .product-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #007bff;
+            margin-top: 10px;
+        }
+        
+        .product-popularity {
+            display: inline-block;
+            background-color: #ffc107;
+            color: #333;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 50px;
+            color: #999;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛍️ Bon Prix - Produktsuche</h1>
+        
+        <form method="GET" action="/" class="filters">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="search">🔍 Suche:</label>
+                    <input type="text" id="search" name="search" 
+                           placeholder="Produktname oder Kategorie..." 
+                           value="{{ current_search }}">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="size">📏 Größe:</label>
+                    <select id="size" name="size">
+                        <option value="">Alle Größen</option>
+                        {% for s in all_sizes %}
+                        <option value="{{ s }}" {% if s == current_size %}selected{% endif %}>{{ s }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="color">🎨 Farbe:</label>
+                    <select id="color" name="color">
+                        <option value="">Alle Farben</option>
+                        {% for c in all_colors %}
+                        <option value="{{ c }}" {% if c == current_color %}selected{% endif %}>{{ c }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label>💰 Preis:</label>
+                    <div class="price-range">
+                        <input type="number" name="min_price" placeholder="Min" 
+                               step="0.01" value="{{ current_min_price }}">
+                        <input type="number" name="max_price" placeholder="Max" 
+                               step="0.01" value="{{ current_max_price }}">
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="sort">📊 Sortieren:</label>
+                    <select id="sort" name="sort">
+                        <option value="name" {% if current_sort == 'name' %}selected{% endif %}>Name</option>
+                        <option value="price_low" {% if current_sort == 'price_low' %}selected{% endif %}>Preis: Niedrig → Hoch</option>
+                        <option value="price_high" {% if current_sort == 'price_high' %}selected{% endif %}>Preis: Hoch → Niedrig</option>
+                        <option value="popularity" {% if current_sort == 'popularity' %}selected{% endif %}>Beliebtheit</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div>
+                <button type="submit">Suchen</button>
+                <button type="button" class="reset-btn" onclick="window.location.href='/'">Zurücksetzen</button>
+            </div>
+        </form>
+        
+        <div class="results-header">
+            <div class="product-count">
+                <strong>{{ products|length }}</strong> Produkt(e) gefunden
+            </div>
+        </div>
+        
+        {% if products %}
+        <div class="products-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <div class="product-image">👕</div>
+                <div class="product-name">{{ product.name }}</div>
+                <div class="product-details">Kategorie: {{ product.category }}</div>
+                <div class="product-details">Größe: {{ product.size }} | Farbe: {{ product.color }}</div>
+                <div class="product-price">€{{ "%.2f"|format(product.price) }}</div>
+                <div class="product-popularity">⭐ {{ product.popularity }}/100</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-results">
+            ❌ Keine Produkte gefunden. Versuchen Sie andere Filter!
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
